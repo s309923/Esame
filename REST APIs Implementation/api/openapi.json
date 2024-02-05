@@ -56,6 +56,16 @@
       "name": "api/films/public/{filmId}/reviews/{reviewerId}",
       "description": "the review issued to the user with ID reviewerId for the public film with ID filmId"
     },
+    
+    {
+      "name": "api/films/public/{filmId}/reviews/{reviewerId}/delegations",
+      "description": "the review delegation issued for the public film with ID filmId"
+    },
+    
+    {
+      "name": "api/films/public/{filmId}/reviews/{reviewerId}/delegations/{delegatedId}",
+      "description": "the review delegation issued to delegatedId for the public film with ID filmId"
+    },
     {
       "name": "api/films/public/assignments",
       "description": "the assignments of review invitations to users"
@@ -915,6 +925,169 @@
         }
       }
     },
+    "/api/films/public/{filmId}/reviews/{reviewerId}/delegations": {
+      "post": {
+        "tags": [
+          "api/films/public/{filmId}/reviews/{reviewerId}/delegations"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "summary": "Delegate film review to some users",
+        "description": "The film with ID filmId is assigned to one user for review and the corresponding delegation is created. The users are specified in the delegation representations in the request body. This operation can only be performed by the reviewer.",
+        "operationId": "issueReviewDelegation",
+        "parameters": [
+          {
+            "name": "filmId",
+            "in": "path",
+            "description": "ID of the film",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "reviewerId",
+            "in": "path",
+            "description": "ID of the user to whom the review has been issued",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "the new film reviews, including the users to whom they are delegated",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/Delegation"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Delegation"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "403": {
+            "description": "Forbidden (user is not the reviewer)",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          },
+          "409": {
+            "description": "Conflict (e.g., wrong film id or unknown reviewer id)",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      }
+    },
+    "/api/films/public/{filmId}/reviews/{reviewerId}/delegations/{delegatedId}": {
+      "delete": {
+        "tags": [
+          "api/films/public/{filmId}/reviews/{reviewerId}/delegations/{delegatedId}"
+        ],
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
+        "summary": "Delete a review delegation",
+        "description": "The delegation of the film with ID filmId and issued to the user with ID delegatedId is deleted. This operation can only be performed by the reviewer, and only if the review has not yet been completed by the delegated.",
+        "operationId": "deleteDelegation",
+        "parameters": [
+          {
+            "name": "filmId",
+            "in": "path",
+            "description": "ID of the film whose review invitation must be deleted",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "reviewerId",
+            "in": "path",
+            "description": "ID of the user to whom the review has been issued",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          },
+          {
+            "name": "delegatedId",
+            "in": "path",
+            "description": "ID of the user to whom the review has been delegated",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int64"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation - No Content",
+            "content": {}
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {}
+          },
+          "403": {
+            "description": "Forbidden (the user is not the reviewer)",
+            "content": {}
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {}
+          },
+          "409": {
+            "description": "Conflict (the review has already been completed)",
+            "content": {}
+          },
+          "500": {
+            "description": "Internal Server Error",
+            "content": {}
+          }
+        }
+      }
+    },
     "/api/films/public/assignments": {
       "post": {
         "tags": [
@@ -1367,6 +1540,59 @@
         },
         "required": [
           "totalPages"
+        ]
+      },
+      "Delegation": {
+        "description": "schema for Delegation data structures",
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "$schema": {
+            "type": "string",
+            "description": "path to the JSON Schema to use for the validation of the JSON data structure describing the film"
+          },
+          "filmId": {
+            "type": "integer",
+            "description": "unique identifier of the film for which a review invitation has been issued"
+          },
+          "reviewerId": {
+            "type": "integer",
+            "description": "unique identifier of the user who has received the review invitation"
+          },
+          "delegatedId": {
+            "type": "integer",
+            "description": "unique identifier of the user who has received the review delegation"
+          },
+          "completed": {
+            "type": "boolean",
+            "description": "true if the review has been completed, false otherwise",
+            "default": "false"
+          },
+          "reviewDate": {
+            "type": "string",
+            "format": "date",
+            "description": "the date when the review has been completed by the invited user"
+          },
+          "rating": {
+            "type": "integer",
+            "description": "the rating the reviewer has given to the film",
+            "minimum": 1,
+            "maximum": 10
+          },
+          "review": {
+            "type": "string",
+            "description": "a textual description of the review",
+            "maxLength": 1000
+          },
+          "self": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "filmId",
+          "reviewerId",
+          "delegatedId"
         ]
       }
     },

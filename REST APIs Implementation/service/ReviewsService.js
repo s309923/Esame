@@ -30,17 +30,15 @@ var constants = require('../utils/constants.js');
               let reviews = [];
             for (const row of rows) {
                 const sql1 = "SELECT filmId as fid, reviewerId as rid, delegatedId as did, completed, reviewDate, rating, review FROM delegations WHERE filmId = ? AND reviewerId = ?";
-                const riga = await new Promise((resolve, reject) => {
-                    db.get(sql1, [row.fid, row.rid], (err, riga) => {
+                const deleg = await new Promise((resolve, reject) => {
+                    db.get(sql1, [row.fid, row.rid], (err, deleg) => {
                         if (err) reject(err);
-                        else resolve(riga);
+                        else resolve(deleg);
                     });
                 });
-                if (riga) {
-                    console.log(riga);
-                    reviews.push(createDelegation(riga));
+                if (deleg) {
+                    reviews.push(createDelegation(deleg));
                 } else {
-                    console.log(row);
                     reviews.push(createReview(row));
                 }
             }
@@ -89,11 +87,9 @@ var constants = require('../utils/constants.js');
   return new Promise((resolve, reject) => {
       const sql = "SELECT filmId as fid, reviewerId as rid, delegatedId as did, completed, reviewDate, rating, review FROM delegations WHERE filmId = ? AND reviewerId = ?";
       db.all(sql, [filmId, reviewerId], (err, rows) => {
-          if (err){
-            console.log("here")
+          if (err) {
               reject(err);
-          }else if (rows.length === 0) {
-            console.log("here2")
+          } else if (rows.length === 0) {
               const sql1 = "SELECT filmId as fid, reviewerId as rid, completed, reviewDate, rating, review FROM reviews WHERE filmId = ? AND reviewerId = ?";
               db.all(sql1, [filmId, reviewerId], (err, row) => {
                   if (err)
@@ -126,46 +122,46 @@ var constants = require('../utils/constants.js');
  * - no response expected for this operation
  * 
  **/
- exports.deleteSingleReview = function(filmId,reviewerId,owner) {
+ exports.deleteSingleReview = function(filmId, reviewerId, owner) {
   return new Promise((resolve, reject) => {
-    db.serialize(()=> {
-        db.run('BEGIN TRANSACTION');
-      const sql1 = "SELECT f.owner, r.completed, d.completed as delg FROM films f, reviews r, delegations d WHERE f.id = r.filmId AND f.id = ? AND r.reviewerId = ? AND d.filmId=f.id AND d.reviewerId=r.reviewerId";
-      db.all(sql1, [filmId, reviewerId], (err, rows) => {
-          if (err)
-              reject(err);
-          else if (rows.length === 0)
-              reject(404);
-          else if(owner != rows[0].owner) {
-              reject("403");
-          }
-          else if(rows[0].completed == 1) {
-              reject("409");
-          }
-          else if(rows[0].delg == 1) {
-            reject("412");
-        }
-          else {
-            const sql3 = 'DELETE FROM delegations WHERE filmId = ? AND reviewerId = ?';
-              db.run(sql3, [filmId, reviewerId], (err) => {
-                  if (err)
-                      reject(err);
-                  else
-                      resolve(null);
-              })
-            const sql2 = 'DELETE FROM reviews WHERE filmId = ? AND reviewerId = ?';
-              db.run(sql2, [filmId, reviewerId], (err) => {
-                  if (err){
-                      db.run('ROLLBACK');
-                      reject(err);
-                  }else{
-                        db.run('COMMIT');
-                      resolve(null);
-                  }
-              })
-          }
-      });
-    })
+      db.serialize(() => {
+          db.run('BEGIN TRANSACTION');
+          const sql1 = "SELECT f.owner, r.completed, d.completed as delg FROM films f, reviews r, delegations d WHERE f.id = r.filmId AND f.id = ? AND r.reviewerId = ? AND d.filmId=f.id AND d.reviewerId=r.reviewerId";
+          db.all(sql1, [filmId, reviewerId], (err, rows) => {
+              if (err)
+                  reject(err);
+              else if (rows.length === 0)
+                  reject(404);
+              else if (owner != rows[0].owner) {
+                  reject(403);
+              }
+              else if (rows[0].completed == 1) {
+                  reject(409);
+              }
+              else if (rows[0].delg == 1) {
+                  reject(412);
+              }
+              else {
+                  const sql3 = 'DELETE FROM delegations WHERE filmId = ? AND reviewerId = ?';
+                  db.run(sql3, [filmId, reviewerId], (err) => {
+                      if (err)
+                          reject(err);
+                      else
+                          resolve(null);
+                  })
+                  const sql2 = 'DELETE FROM reviews WHERE filmId = ? AND reviewerId = ?';
+                  db.run(sql2, [filmId, reviewerId], (err) => {
+                      if (err) {
+                          db.run('ROLLBACK');
+                          reject(err);
+                      } else {
+                          db.run('COMMIT');
+                          resolve(null);
+                      }
+                  })
+              }
+          });
+      })
       
   });
 
@@ -186,7 +182,6 @@ var constants = require('../utils/constants.js');
  * 
  **/
  exports.issueFilmReview = function(invitations,owner) {
-    console.log(invitations)
   return new Promise((resolve, reject) => {
       const sql1 = "SELECT owner, private FROM films WHERE id = ?";
       db.all(sql1, [invitations[0].filmId], (err, rows) => {
@@ -265,7 +260,6 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
  * 
  **/
  exports.updateSingleReview = function(review, filmId, reviewerId, userId) {
-    console.log(review)
   return new Promise((resolve, reject) => {
       const sql = "SELECT * FROM delegations WHERE filmId = ? AND reviewerId = ?"
       db.get(sql, [filmId, reviewerId], (err, row) => {
@@ -276,7 +270,6 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
           } else if (row && row.delegatedId == userId) {
               const sql1 = "SELECT * FROM delegations WHERE filmId = ? AND reviewerId = ? AND delegatedId = ?";
               db.all(sql1, [filmId, reviewerId, userId], (err, rows) => {
-                  console.log(rows)
                   if (err)
                       reject(err);
                   else if (rows.length === 0)
@@ -318,7 +311,6 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
           } else {
               const sql1 = "SELECT * FROM reviews WHERE filmId = ? AND reviewerId = ?";
               db.all(sql1, [filmId, reviewerId], (err, rows) => {
-                  console.log(rows)
                   if (err)
                       reject(err);
                   else if (rows.length === 0)
@@ -327,8 +319,7 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
                       reject(403);
                   } else if (rows[0].completed == 1) {
                       reject(406);
-                  }
-                  else {
+                  } else {
                       var sql2 = 'UPDATE reviews SET completed = ?';
                       var parameters = [review.completed];
                       if (review.reviewDate != undefined) {

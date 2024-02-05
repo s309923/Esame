@@ -4,10 +4,8 @@ var Delegations = require('../service/DelegationsService');
 var constants = require('../utils/constants.js');
 
 module.exports.issueDelegation = function issueDelegation (req, res, next) {
-    console.log(req.params)
-    console.log(req.body)
     if(req.params.filmId != req.body.filmId){
-      utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The filmId field of the review object is different from the filmdId path parameter.' }], }, 409);
+      utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The filmId field of the review object is different from the filmdId path parameter.'}], }, 409);
     }
     else {
       Delegations.issueDelegation(req.body, req.params.reviewerId, req.user.id)
@@ -37,7 +35,7 @@ module.exports.issueDelegation = function issueDelegation (req, res, next) {
           utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'You cannot delegate the review to the owner'}], }, 412);
         }
         else if (response == 413){
-          utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'You cannot delegate the review to yourself'}], }, 412);
+          utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'You cannot delegate the review to yourself'}], }, 413);
         }
         else {
             utils.writeJson(res, {errors: [{ 'param': 'Server', 'msg': response }],}, 500);
@@ -52,10 +50,10 @@ module.exports.deleteDelegation = function deleteDelegation (req, res, next) {
         utils.writeJson(res, response, 204);
       })
       .catch(function (response) {
-        if(response == "403"){
+        if(response == 403){
           utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The user is not reviewer of the film' }], }, 403);
         }
-        else if(response == "409"){
+        else if(response == 409){
           utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The review has been already completed, so the delegation cannot be deleted anymore.' }], }, 409);
         }
         else if (response == 404){

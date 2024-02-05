@@ -48,12 +48,7 @@
             "completed": {
               "const": false
             }
-          },
-          "allOf" : [   
-            {"not" : { "required" : ["reviewDate"] } },  
-            {"not" : { "required" : ["rating"] } },
-            {"not" : { "required" : ["review"] } }
-          ]
+          }
         },
         {
           "properties": {
