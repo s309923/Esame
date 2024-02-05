@@ -1,0 +1,10 @@
+{
+    "$schema": "./delegation_schema.json",
+    "filmId": 2,
+    "reviewerId": 3,
+    "delegatedId": 3,
+    "completed": false,
+    "reviewDate": "2022-02-22",
+    "rating": 7,
+    "review": "Non molto interessante."
+  }
