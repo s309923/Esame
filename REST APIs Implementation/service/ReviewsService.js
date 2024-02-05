@@ -128,6 +128,8 @@ var constants = require('../utils/constants.js');
  **/
  exports.deleteSingleReview = function(filmId,reviewerId,owner) {
   return new Promise((resolve, reject) => {
+    db.serialize(()=> {
+        db.run('BEGIN TRANSACTION');
       const sql1 = "SELECT f.owner, r.completed, d.completed as delg FROM films f, reviews r, delegations d WHERE f.id = r.filmId AND f.id = ? AND r.reviewerId = ? AND d.filmId=f.id AND d.reviewerId=r.reviewerId";
       db.all(sql1, [filmId, reviewerId], (err, rows) => {
           if (err)
@@ -153,13 +155,18 @@ var constants = require('../utils/constants.js');
               })
             const sql2 = 'DELETE FROM reviews WHERE filmId = ? AND reviewerId = ?';
               db.run(sql2, [filmId, reviewerId], (err) => {
-                  if (err)
+                  if (err){
+                      db.run('ROLLBACK');
                       reject(err);
-                  else
+                  }else{
+                        db.run('COMMIT');
                       resolve(null);
+                  }
               })
           }
       });
+    })
+      
   });
 
 }
@@ -316,7 +323,7 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
                       reject(err);
                   else if (rows.length === 0)
                       reject(404);
-                  else if (reviewerId != rows[0].reviewerId) {
+                  else if (userId != rows[0].reviewerId) {
                       reject(403);
                   } else if (rows[0].completed == 1) {
                       reject(406);

@@ -33,6 +33,12 @@ module.exports.issueDelegation = function issueDelegation (req, res, next) {
         else if (response == 411){
           utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'You are a delegated, you cannot delegate the review'}], }, 411);
         }
+        else if (response == 412){
+          utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'You cannot delegate the review to the owner'}], }, 412);
+        }
+        else if (response == 413){
+          utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'You cannot delegate the review to yourself'}], }, 412);
+        }
         else {
             utils.writeJson(res, {errors: [{ 'param': 'Server', 'msg': response }],}, 500);
         }

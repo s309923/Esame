@@ -20,14 +20,20 @@ exports.issueDelegation = function(invitation, reviewerId, userId) {
               else if (row) {
                   reject(410);
               } else {
-                  const sql1 = "SELECT filmId as fid, reviewerId as rid, completed, reviewDate, rating, review FROM reviews WHERE filmId = ? AND reviewerId = ?";
+                  const sql1 = "SELECT f.owner as owner, r.filmId as fid, r.reviewerId as rid, r.completed, r.reviewDate, r.rating, r.review FROM reviews r, films f WHERE f.id=filmId AND filmId = ? AND reviewerId = ?";
                   db.all(sql1, [invitation.filmId, reviewerId], (err, rows) => {
                       if (err) {
                           reject(err);
-                      }
+                      } else if (invitation.delegatedId == userId) {
+                        reject(413);
+                    } 
                       else if (rows.length === 0) {
                           reject(404);
-                      }
+                      }else if (userId != rows[0].rid) {
+                        reject(404);
+                    } else if (invitation.delegatedId == rows[0].owner) {
+                        reject(412);
+                    }
                       else if (reviewerId != rows[0].rid) {
                           reject(403);
                       } else if (rows[0].private == 1) {
