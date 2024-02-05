@@ -141,7 +141,9 @@ module.exports.updateSingleReview = function updateSingleReview (req, res, next)
             utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The review is completed' }], }, 406);
         } else if (response == 407){
             utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'You have delegated this review' }], }, 406);
-        } else if (response == 413){
+        } else if (response == 409){
+          utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'Cannot complete, some fields are missing' }], }, 409);
+      } else if (response == 413){
             utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'You are delegated' }], }, 406);
         } else {
             utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': response }], }, 500);

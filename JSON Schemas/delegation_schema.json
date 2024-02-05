@@ -43,28 +43,5 @@
         "maxLength": 1000
       }
     },
-    "required": ["filmId", "reviewerId", "delegatedId", "completed"],
-    "dependencies": {
-      "completed": {
-        "oneOf": [
-          {
-            "properties": {
-              "completed": {
-                "const": false
-              }
-            }
-          },
-          {
-            "properties": {
-              "completed": {
-                "const": true  
-              }
-            },
-            "required": [
-              "reviewDate", "rating", "review"
-            ]
-          }
-        ]
-      }
-    }
+    "required": ["filmId", "reviewerId", "delegatedId", "completed"]
   }

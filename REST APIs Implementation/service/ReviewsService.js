@@ -280,8 +280,8 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
                       reject(406);
                   }
                   else {
-                      var sql2 = 'UPDATE delegations SET completed = ?';
-                      var parameters = [review.completed];
+                      var sql2 = 'UPDATE delegations SET completed=?';
+                      var parameters=[0];
                       if (review.reviewDate != undefined) {
                           sql2 = sql2.concat(', reviewDate = ?');
                           parameters.push(review.reviewDate);
@@ -303,11 +303,33 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
                           if (err) {
                               reject(err);
                           } else {
-                              resolve(null);
+                            if(review.completed==1){
+                                db.get('SELECT * FROM delegations WHERE filmId = ? AND reviewerId = ? AND delegatedId = ? AND reviewDate IS NOT NULL AND rating IS NOT NULL AND review IS NOT NULL',
+                                [filmId, reviewerId, userId], function (err, result) {
+                                if (err) {
+                                    reject(err);
+                                } else if (result) {
+                                    var sql3 = 'UPDATE delegations SET completed=1 WHERE filmId = ? AND reviewerId = ? AND delegatedId = ?';
+                                    db.run(sql3, [filmId, reviewerId, userId], function (err) {
+                                        if (err) {
+                                            reject(err);
+                                        } else {
+                                            resolve();
+                                        }
+                                    })
+                                } else {
+                                    reject(409)
+                                }
+                            })
+                            }else{
+                                resolve(null)
+                            }
+                            
                           }
                       })
                   }
-              });
+              })
+              
           } else {
               const sql1 = "SELECT * FROM reviews WHERE filmId = ? AND reviewerId = ?";
               db.all(sql1, [filmId, reviewerId], (err, rows) => {
@@ -321,7 +343,7 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
                       reject(406);
                   } else {
                       var sql2 = 'UPDATE reviews SET completed = ?';
-                      var parameters = [review.completed];
+                      var parameters = [0];
                       if (review.reviewDate != undefined) {
                           sql2 = sql2.concat(', reviewDate = ?');
                           parameters.push(review.reviewDate);
@@ -342,7 +364,27 @@ const issueSingleReview = function(sql3, filmId, reviewerId){
                           if (err) {
                               reject(err);
                           } else {
-                              resolve(null);
+                            if(review.completed==1){
+                                db.get('SELECT * FROM reviews WHERE filmId = ? AND reviewerId = ? AND reviewDate IS NOT NULL AND rating IS NOT NULL AND review IS NOT NULL',
+                                    [filmId, reviewerId], function (err, result) {
+                                if (err) {
+                                    reject(err);
+                                } else if (result) {
+                                    var sql3 = 'UPDATE reviews SET completed=1 WHERE filmId = ? AND reviewerId = ?';
+                                    db.run(sql3, [filmId, reviewerId], function (err) {
+                                        if (err) {
+                                            reject(err);
+                                        } else {
+                                            resolve();
+                                        }
+                                    })
+                                } else {
+                                    reject(409)
+                                }
+                            })
+                            }else{
+                                resolve(null)
+                            }
                           }
                       })
                   }
