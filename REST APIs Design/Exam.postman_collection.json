@@ -1,0 +1,918 @@
+{
+	"info": {
+		"_postman_id": "43ee31df-21a3-4e60-9470-b3b1028f7437",
+		"name": "Exam",
+		"description": "List of call of API to test the new functionalities of Film Library",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31332694"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "user.dsp@polito.it",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						}
+					],
+					"options": {
+						"urlencoded": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/users/authenticator?type=login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"users",
+						"authenticator"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "login"
+						}
+					]
+				},
+				"description": "Login with user #1"
+			},
+			"response": []
+		},
+		{
+			"name": "Update partially review",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 4,\r\n    \"reviewerId\" : 1,\r\n    \"completed\": false,\r\n    \"review\" : \"good job of director artist\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/4/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"4",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "I can update partially a review"
+			},
+			"response": []
+		},
+		{
+			"name": "Final update of a review",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 4,\r\n    \"reviewerId\" : 1,\r\n    \"completed\": true,\r\n    \"reviewDate\" : \"2024-06-02\",\r\n    \"rating\" : 7\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/4/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"4",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "I can complete a review because all the field are completed"
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot update completed review",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 4,\r\n    \"reviewerId\" : 1,\r\n    \"completed\": true,\r\n    \"reviewDate\" : \"2024-07-02\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/4/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"4",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "I can't modify the review because it's completed."
+			},
+			"response": []
+		},
+		{
+			"name": "Update partially review but cant set completed because something is missing",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 3,\r\n    \"reviewerId\" : 1,\r\n    \"completed\": true,\r\n    \"reviewDate\" : \"2024-07-02\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/3/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"3",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "I can't set to completed the review because a field is missing"
+			},
+			"response": []
+		},
+		{
+			"name": "Completed only when all fields are set",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 3,\r\n    \"reviewerId\" : 1,\r\n    \"completed\": true,\r\n    \"reviewDate\" : \"2024-07-02\",\r\n    \"rating\" : 7,\r\n    \"review\": \"nice film\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/3/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"3",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "Now i can complete the review"
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot delegate to yourself",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"delegatedId\" : 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1/delegations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1",
+						"delegations"
+					]
+				},
+				"description": "I can't delegated the review to myself"
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot delegate if you are not the reviewer",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"delegatedId\" : 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/5/delegations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"5",
+						"delegations"
+					]
+				},
+				"description": "Only the reviewer can delegate the review."
+			},
+			"response": []
+		},
+		{
+			"name": "Delegation",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"delegatedId\" : 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1/delegations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1",
+						"delegations"
+					]
+				},
+				"description": "Successfull delegation"
+			},
+			"response": []
+		},
+		{
+			"name": "Only one delegation",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"delegatedId\" : 6\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1/delegations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1",
+						"delegations"
+					]
+				},
+				"description": "Only one delegation is permitted"
+			},
+			"response": []
+		},
+		{
+			"name": "Login with user 3",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "karen.makise@polito.it",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "fg204v213",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/users/authenticator?type=login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"users",
+						"authenticator"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "login"
+						}
+					]
+				},
+				"description": "Login with user #3"
+			},
+			"response": []
+		},
+		{
+			"name": "User 3 try to update but reviews does not respect the schemas",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"reviewerId\" : 1,\r\n    \"completed\" : false,\r\n    \"rating\" : 15\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "I have to respect the json schemas of the review, in this case the rating is bigger than 10."
+			},
+			"response": []
+		},
+		{
+			"name": "Partially update of delegation review",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"reviewerId\" : 1,\r\n    \"completed\" : false,\r\n    \"rating\" : 9\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "I can partially update a review like a delegate"
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot complete, some fields are missing",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"reviewerId\" : 1,\r\n    \"completed\" : true,\r\n    \"rating\" : 9\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "I can't complete the review if some fields are missing"
+			},
+			"response": []
+		},
+		{
+			"name": "Complete update of delegation review",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"reviewerId\" : 1,\r\n    \"completed\" : true,\r\n    \"reviewDate\" : \"2023-04-04\",\r\n    \"rating\" : 9,\r\n    \"review\" : \"I love this film\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "Like a delegated I can complete a review"
+			},
+			"response": []
+		},
+		{
+			"name": "A delegated cannot delegate the review",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"delegatedId\" : 6\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1/delegations",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1",
+						"delegations"
+					]
+				},
+				"description": "Like a delegated I can't delegated the review"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete an incomplete delegation review",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 3,\r\n    \"reviewerId\" : 3,\r\n    \"delegatedId\" : 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/3/reviews/3/delegations/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"3",
+						"reviews",
+						"3",
+						"delegations",
+						"1"
+					]
+				},
+				"description": "Delete of an incomplete review"
+			},
+			"response": []
+		},
+		{
+			"name": "Login2",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "user.dsp@polito.it",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						}
+					],
+					"options": {
+						"urlencoded": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/users/authenticator?type=login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"users",
+						"authenticator"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "login"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot delete a completed delegation review",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\" : 6,\r\n    \"reviewerId\" : 1,\r\n    \"delegatedId\" : 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1/delegations/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1",
+						"delegations",
+						"3"
+					]
+				},
+				"description": "If a delegation review is complete it isn't possible delete it"
+			},
+			"response": []
+		},
+		{
+			"name": "Get the review or the delegation if exist",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews"
+					]
+				},
+				"description": "Get of all the reviews for a film, if there is a delegation for a review we can see also the user of the delegated."
+			},
+			"response": []
+		},
+		{
+			"name": "login with user 5",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "beatrice.golden@polito.it",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "seagulls",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/users/authenticator?type=login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"users",
+						"authenticator"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "login"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete incomplete review",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\": 6,\r\n    \"reviewerId\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/5",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"5"
+					]
+				},
+				"description": "I can delete a review if it's incomplete."
+			},
+			"response": []
+		},
+		{
+			"name": "Cannot delete review if it has a complete delegation review",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\": 6,\r\n    \"reviewerId\": 3\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"1"
+					]
+				},
+				"description": "I can delete a review if it's completed or the delegation review it's completed"
+			},
+			"response": []
+		},
+		{
+			"name": "Delete review and delegation",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"filmId\": 6,\r\n    \"reviewerId\": 4\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"4"
+					]
+				},
+				"description": "If the owner of a film delete a incomplete review the incomplete delegation is cancelled too."
+			},
+			"response": []
+		}
+	]
+}
