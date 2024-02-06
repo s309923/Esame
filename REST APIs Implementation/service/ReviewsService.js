@@ -122,51 +122,79 @@ var constants = require('../utils/constants.js');
  * - no response expected for this operation
  * 
  **/
- exports.deleteSingleReview = function(filmId, reviewerId, owner) {
-  return new Promise((resolve, reject) => {
-      db.serialize(() => {
-          db.run('BEGIN TRANSACTION');
-          const sql1 = "SELECT f.owner, r.completed, d.completed as delg FROM films f, reviews r, delegations d WHERE f.id = r.filmId AND f.id = ? AND r.reviewerId = ? AND d.filmId=f.id AND d.reviewerId=r.reviewerId";
-          db.all(sql1, [filmId, reviewerId], (err, rows) => {
-              if (err)
-                  reject(err);
-              else if (rows.length === 0)
-                  reject(404);
-              else if (owner != rows[0].owner) {
-                  reject(403);
-              }
-              else if (rows[0].completed == 1) {
-                  reject(409);
-              }
-              else if (rows[0].delg == 1) {
-                  reject(412);
-              }
-              else {
-                  const sql3 = 'DELETE FROM delegations WHERE filmId = ? AND reviewerId = ?';
-                  db.run(sql3, [filmId, reviewerId], (err) => {
-                      if (err)
-                          reject(err);
-                      else
-                          resolve(null);
-                  })
-                  const sql2 = 'DELETE FROM reviews WHERE filmId = ? AND reviewerId = ?';
-                  db.run(sql2, [filmId, reviewerId], (err) => {
-                      if (err) {
-                          db.run('ROLLBACK');
-                          reject(err);
-                      } else {
-                          db.run('COMMIT');
-                          resolve(null);
-                      }
-                  })
-              }
-          });
-      })
-      
-  });
+exports.deleteSingleReview = function(filmId,reviewerId,owner) {
+    return new Promise((resolve, reject) => {
+        
+        const sql1 = "SELECT f.owner, r.completed FROM films f, reviews r WHERE f.id = r.filmId AND f.id = ? AND r.reviewerId = ?";
+        db.all(sql1, [filmId, reviewerId], (err, rows) => {
+            if (err)
+                reject(err);
+            else if (rows.length === 0)
+                reject(404);
+            else if (owner != rows[0].owner) {
+                reject("403");
+            }
+            else if (rows[0].completed == 1) {
+                reject("409");
+            }
+            else {
+                const sql2 = "SELECT * FROM delegations WHERE filmId = ? AND reviewerId = ?";
+                db.all(sql2, [filmId, reviewerId], (err, row) => {
+                    if (err)
+                        reject(err);
+                    else if (row.length === 0) {
+                        const sql3 = 'DELETE FROM reviews WHERE filmId = ? AND reviewerId = ?';
+                        db.run(sql3, [filmId, reviewerId], (err) => {
+                            if (err)
+                                reject(err);
+                            else
+                                resolve(null);
+                        })
+                    }
+                    else if (row[0].completed == 1) {
+                        reject("409");
+                    }
+                    else {
+                        db.serialize(() => {
+                            db.run('BEGIN TRANSACTION', transactionErr => {
+                                if (transactionErr) {
+                                    reject("rollback" + transactionErr);
+                                    return;
+                                }
+                                const sql4 = 'DELETE FROM delegations WHERE filmId = ? AND reviewerId = ?';
+                                db.run(sql4, [filmId, reviewerId], (err) => {
+                                    if (err) {
+                                        db.run('ROLLBACK');
+                                        reject(err);
+                                    } else {
+                                        const sql5 = 'DELETE FROM reviews WHERE filmId = ? AND reviewerId = ?';
+                                        db.run(sql5, [filmId, reviewerId], (err) => {
+                                            if (err) {
+                                                db.run('ROLLBACK');
+                                                reject(err);
+                                            } else {
+                                                db.run('COMMIT', commitErr => {
+                                                    if (commitErr) {
+                                                        reject("commit error" + commitErr);
+                                                    } else {
+                                                        resolve(null);
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+                        });
 
+                    }
+                });
+            }
+        });
+        
+    });
+  
 }
-
 
 
 /**
