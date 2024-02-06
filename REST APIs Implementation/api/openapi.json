@@ -857,6 +857,22 @@
             "description": "Not Found",
             "content": {}
           },
+          "406": {
+            "description": "The review is completed",
+            "content": {}
+          },
+          "407": {
+            "description": "You have delegated this review",
+            "content": {}
+          },
+          "409": {
+            "description": "Some fields are missing",
+            "content": {}
+          },
+          "413": {
+            "description": "You are delegated",
+            "content": {}
+          },
           "500": {
             "description": "Internal Server Error",
             "content": {}
@@ -916,6 +932,10 @@
           },
           "409": {
             "description": "Conflict (the review has already been completed)",
+            "content": {}
+          },
+          "412": {
+            "description": "The review has been already a completed delegation",
             "content": {}
           },
           "500": {
@@ -1004,8 +1024,28 @@
             "description": "Not Found",
             "content": {}
           },
+          "405": {
+            "description": "The review is completed",
+            "content": {}
+          },
           "409": {
             "description": "Conflict (e.g., wrong film id or unknown reviewer id)",
+            "content": {}
+          },
+          "410": {
+            "description": "Only one delegation",
+            "content": {}
+          },
+          "411": {
+            "description": "You can't delegate",
+            "content": {}
+          },
+          "412": {
+            "description": "You can't delegate to the owner",
+            "content": {}
+          },
+          "413": {
+            "description": "You cannot delegate the review to yourself",
             "content": {}
           },
           "500": {
