@@ -17,7 +17,13 @@ exports.issueDelegation = function(invitation, reviewerId, userId) {
               } else if (row) {
                   reject(410);
               } else {
-                  const sql1 = "SELECT f.owner as owner, r.filmId as fid, r.reviewerId as rid, r.completed, r.reviewDate, r.rating, r.review FROM reviews r, films f WHERE f.id=filmId AND filmId = ? AND reviewerId = ?";
+                  const sql4 = "SELECT * FROM reviews r WHERE filmId = ? AND reviewerID = ?"
+                  db.get(sql4, [invitation.filmId, invitation.delegatedId], (err, riga) => {
+                    if(err) reject(err);
+                    else if(riga){
+                        reject(408);
+                    }else{
+                        const sql1 = "SELECT f.owner as owner, r.filmId as fid, r.reviewerId as rid, r.completed, r.reviewDate, r.rating, r.review FROM reviews r, films f WHERE f.id=filmId AND filmId = ? AND reviewerId = ?";
                   db.all(sql1, [invitation.filmId, reviewerId], (err, rows) => {
                       if (err) {
                           reject(err);
@@ -56,6 +62,9 @@ exports.issueDelegation = function(invitation, reviewerId, userId) {
                           });
                       }
                   });
+
+                    }
+                  })
               }
           });
   });

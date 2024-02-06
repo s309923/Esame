@@ -22,6 +22,9 @@ module.exports.issueDelegation = function issueDelegation (req, res, next) {
         else if (response == 405){
             utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The review is completed' }], }, 405);
         }
+        else if (response == 408){
+          utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The user is a reviewer for this film' }], }, 409);
+        }
         else if (response == 409){
           utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'The user with ID reviewerId does not exist.' }], }, 409);
         }
