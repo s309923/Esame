@@ -652,7 +652,7 @@
 			"response": []
 		},
 		{
-			"name": "Login2",
+			"name": "Login with user 1",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -765,7 +765,34 @@
 			"response": []
 		},
 		{
-			"name": "login with user 5",
+			"name": "Get single review or the delegation ",
+			"request": {
+				"auth": {
+					"type": "inherit"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3001/api/films/public/6/reviews/4",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3001",
+					"path": [
+						"api",
+						"films",
+						"public",
+						"6",
+						"reviews",
+						"4"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login with user 5",
 			"request": {
 				"auth": {
 					"type": "inherit"
