@@ -78,6 +78,9 @@ This delegation is only deleted if it has not yet been completed
 To install dependencies and to launch the server:
 prova_esame\REST APIs Implementation> npm start
 
+To test all the new functionalities, I initialised the db so that all the 
+APIs of the Postman collection (in the API design folder) can be executed in order
+
 To view the Swagger UI interface:
 open http://localhost:3001/docs
 
