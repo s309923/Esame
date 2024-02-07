@@ -128,6 +128,9 @@ module.exports.updateSingleReview = function updateSingleReview (req, res, next)
   if(req.body.completed == undefined){
     req.body.completed = false;
   }
+  if(req.body.reviewerId != req.params.reviewerId){
+    utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': 'ReviewerId in body is different from API' }], }, 403);
+  }else{
     Reviews.updateSingleReview(req.body, req.params.filmId, req.params.reviewerId, req.user.id)
     .then(function(response) {
         utils.writeJson(res, response, 204);
@@ -149,5 +152,6 @@ module.exports.updateSingleReview = function updateSingleReview (req, res, next)
             utils.writeJson(res, { errors: [{ 'param': 'Server', 'msg': response }], }, 500);
         }
     });
+  }
 };
 
